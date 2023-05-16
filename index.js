@@ -190,6 +190,93 @@ app.delete('/comprasb/:codCom', (req, res) => {
       }
     );
   });
+
+
+  //PAGOSB
+  //Obtener todos los pagos
+  app.get('/pagos', (req, res) => {
+    connection.query('SELECT * FROM pagos', (err, results) => {
+      if (err) {
+        console.error('Error al obtener los pagos:', err);
+        res.status(500).json({ error: 'Error al obtener los pagos' });
+      } else {
+        res.json(results);
+      }
+    });
+  });
+
+  //Obtener pagos por su codigo
+  app.get('/pagos/:cod_pago', (req, res) => {
+    const cod_pago = req.params.cod_pago;
+    connection.query(
+      'SELECT * FROM pagos WHERE cod_pago = ?',
+      [cod_pago],
+      (err, results) => {
+        if (err) {
+          console.error('Error al obtener el pago:', err);
+          res.status(500).json({ error: 'Error al obtener el pago' });
+        } else if (results.length === 0) {
+          res.status(404).json({ error: 'Pago no encontrado' });
+        } else {
+          res.json(results[0]);
+        }
+      }
+    );
+  });
+
+  //Crear un nuevo pago
+
+  app.post('/pagos', (req, res) => {
+    const nuevoPago = req.body;
+    connection.query('INSERT INTO pagos SET ?', nuevoPago, (err, result) => {
+      if (err) {
+        console.error('Error al crear el pago:', err);
+        res.status(500).json({ error: 'Error al crear el pago' });
+      } else {
+        res.status(201).json({ message: 'Pago creado exitosamente' });
+      }
+    });
+  });
+  
+  //Actualizar un pago
+  app.put('/pagos/:cod_pago', (req, res) => {
+    const cod_pago = req.params.cod_pago;
+    const datosPago = req.body;
+    connection.query(
+      'UPDATE pagos SET ? WHERE cod_pago = ?',
+      [datosPago, cod_pago],
+      (err, result) => {
+        if (err) {
+          console.error('Error al actualizar el pago:', err);
+          res.status(500).json({ error: 'Error al actualizar el pago' });
+        } else if (result.affectedRows === 0) {
+          res.status(404).json({ error: 'Pago no encontrado' });
+        } else {
+          res.json({ message: 'Pago actualizado exitosamente' });
+        }
+      }
+    );
+  });
+
+  //Eliminar un pago
+
+  app.delete('/pagos/:cod_pago', (req, res) => {
+    const cod_pago = req.params.cod_pago;
+    connection.query(
+      'DELETE FROM pagos WHERE cod_pago = ?',
+      [cod_pago],
+      (err, result) => {
+        if (err) {
+          console.error('Error al eliminar el pago:', err);
+          res.status(500).json({ error: 'Error al eliminar el pago' });
+        } else if (result.affectedRows === 0) {
+          res.status(404).json({ error: 'Pago no encontrado' });
+        } else {
+          res.json({ message: 'Pago eliminado exitosamente' });
+        }
+      }
+    );
+  });
   
   // Iniciar el servidor
   app.listen(port, () => {
