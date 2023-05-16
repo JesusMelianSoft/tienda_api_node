@@ -278,6 +278,7 @@ app.delete('/comprasb/:codCom', (req, res) => {
     );
   });
   
+  //
   // Iniciar el servidor
   app.listen(port, () => {
     console.log(`La API está funcionando en http://localhost:${port}`);
