@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app');
+const app = require('../index');
 
 describe('Tests para el endpoint de clientes', () => {
   // Test para obtener todos los clientes
