@@ -107,7 +107,90 @@ app.post('/clientes', (req, res) => {
   });
   
   
+//COMPRASB
+//Obtener todas las compras
+app.get('/comprasb', (req, res) => {
+    connection.query('SELECT * FROM comprasb', (err, results) => {
+      if (err) {
+        console.error('Error al obtener las compras:', err);
+        res.status(500).json({ error: 'Error al obtener las compras' });
+      } else {
+        res.json(results);
+      }
+    });
+  });
 
+  //obtener compra por cod
+  app.get('/comprasb/:codCom', (req, res) => {
+    const codCom = req.params.codCom;
+    connection.query(
+      'SELECT * FROM comprasb WHERE codCom = ?',
+      [codCom],
+      (err, results) => {
+        if (err) {
+          console.error('Error al obtener la compra:', err);
+          res.status(500).json({ error: 'Error al obtener la compra' });
+        } else if (results.length === 0) {
+          res.status(404).json({ error: 'Compra no encontrada' });
+        } else {
+          res.json(results[0]);
+        }
+      }
+    );
+  });
+
+  //Insertar compra
+  app.post('/comprasb', (req, res) => {
+    const nuevaCompra = req.body;
+    connection.query('INSERT INTO comprasb SET ?', nuevaCompra, (err, result) => {
+      if (err) {
+        console.error('Error al crear la compra:', err);
+        res.status(500).json({ error: 'Error al crear la compra' });
+      } else {
+        res.status(201).json({ message: 'Compra creada exitosamente' });
+      }
+    });
+  });
+
+  //Actualizar compra
+  app.put('/comprasb/:codCom', (req, res) => {
+    const codCom = req.params.codCom;
+    const datosCompra = req.body;
+    connection.query(
+      'UPDATE comprasb SET ? WHERE codCom = ?',
+      [datosCompra, codCom],
+      (err, result) => {
+        if (err) {
+          console.error('Error al actualizar la compra:', err);
+          res.status(500).json({ error: 'Error al actualizar la compra' });
+        } else if (result.affectedRows === 0) {
+          res.status(404).json({ error: 'Compra no encontrada' });
+        } else {
+          res.json({ message: 'Compra actualizada exitosamente' });
+        }
+      }
+    );
+  });
+  
+//Eliminar una compra
+app.delete('/comprasb/:codCom', (req, res) => {
+    const codCom = req.params.codCom;
+    connection.query(
+      'DELETE FROM comprasb WHERE codCom = ?',
+      [codCom],
+      (err, result) => {
+        if (err) {
+          console.error('Error al eliminar la compra:', err);
+          res.status(500).json({ error: 'Error al eliminar la compra' });
+        } else if (result.affectedRows === 0) {
+          res.status(404).json({ error: 'Compra no encontrada' });
+        } else {
+          res.json({ message: 'Compra eliminada exitosamente' });
+        }
+      }
+    );
+  });
+  
   // Iniciar el servidor
   app.listen(port, () => {
     console.log(`La API está funcionando en http://localhost:${port}`);
